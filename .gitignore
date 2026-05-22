@@ -1,0 +1,71 @@
+# # Dependencies
+# node_modules/
+# __pycache__/
+# *.pyc
+# .venv/
+# env/
+# .env
+
+# # Build
+# dist/
+# build/
+# *.egg-info/
+
+# # IDE
+# .vscode/
+# .idea/
+# *.swp
+
+# # OS
+# .DS_Store
+# Thumbs.db
+
+# # Docker
+# *.log
+
+# # Environment
+# .env.local
+# .env.production
+
+# # ChromaDB
+# chroma_data/
+
+# # Redis dump
+# dump.rdb
+
+# # Uploads
+# uploads/
+# Environment
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# ChromaDB Local Data (fixes binary blob issue in repo)
+jarvis_memory/
+chroma_data/
+
+# Workspace generated files
+workspace/*.py
+
+# Node
+node_modules/
+apps/frontend/dist/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.log

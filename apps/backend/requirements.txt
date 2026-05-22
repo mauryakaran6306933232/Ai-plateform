@@ -1,0 +1,54 @@
+# Core
+fastapi
+uvicorn[standard]
+python-multipart
+python-dotenv
+pydantic
+pydantic-settings
+
+# Auth
+python-jose[cryptography]
+bcrypt
+
+# Database
+sqlalchemy
+asyncpg
+alembic
+
+# Redis
+redis
+
+# Vector DB
+chromadb
+
+# AI / ML
+langchain
+langchain-community
+langchain-ollama
+langgraph
+
+# Ollama
+ollama
+
+# WebSockets
+websockets
+
+# Computer Vision (Backend only for processing, not live feed)
+opencv-python
+
+# Monitoring
+prometheus-client
+psutil
+
+# HTTP
+httpx
+aiohttp
+
+# Utilities (UNPINNED to support Python 3.13 wheels)
+numpy
+pandas
+Pillow
+# Browser Automation
+playwright==1.45.0
+# Audio Intelligence
+openai-whisper
