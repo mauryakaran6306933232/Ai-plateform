@@ -30,10 +30,17 @@ node_modules/
 # Build
 apps/frontend/dist/
 
-# Data
+# ChromaDB Data
 chroma_data/
-workspace/
-*.db
+jarvis_memory/
+**/jarvis_memory/
 
-# Docker
-docker-compose.override.yml
+# Workspace (generated files)
+workspace/
+
+# Database
+*.db
+*.sqlite3
+
+# Logs
+*.log
