@@ -23,7 +23,9 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('ai-platform-token');
-      window.location.href = '/login';
+      if (!window.location.pathname.includes('/login')) {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
@@ -77,7 +79,6 @@ export const jarvisAPI = {
   voice: (formData) => api.post('/jarvis/voice', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   }),
-  // NEW: Upload files directly from Jarvis Chat
   uploadFile: (formData) => api.post('/jarvis/upload-file', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   }),

@@ -1,0 +1,91 @@
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: ai-platform-db
+    plan: free
+    ipAllowList: []
+
+  # Redis Cache
+  - type: redis
+    name: ai-platform-redis
+    plan: free
+    ipAllowList: []
+
+  # FastAPI Backend
+  - type: web
+    name: ai-platform-backend
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: APP_NAME
+        value: AI-Platform
+      - key: APP_ENV
+        value: production
+      - key: APP_PORT
+        value: 8000
+      - key: FRONTEND_URL
+        sync: false
+        # Set this to your Vercel URL after frontend deployment
+        # e.g., https://your-app.vercel.app
+      - key: POSTGRES_HOST
+        fromService:
+          name: ai-platform-db
+          type: pserv
+          property: host
+      - key: POSTGRES_PORT
+        value: 5432
+      - key: POSTGRES_USER
+        value: aiplatform
+      - key: POSTGRES_PASSWORD
+        fromService:
+          name: ai-platform-db
+          type: pserv
+          property: internalConnectionString
+          regex: "postgresql://[^:]+:([^@]+)@.*"
+      - key: POSTGRES_DB
+        value: aiplatform
+      - key: DATABASE_URL
+        fromService:
+          name: ai-platform-db
+          type: pserv
+          property: internalConnectionString
+      - key: REDIS_HOST
+        fromService:
+          name: ai-platform-redis
+          type: redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          name: ai-platform-redis
+          type: redis
+          property: port
+      - key: CHROMA_HOST
+        value: ""
+      - key: CHROMA_PORT
+        value: 8000
+      - key: CHROMA_PERSIST_DIR
+        value: /app/chroma_data
+      - key: WORKSPACE_DIR
+        value: /app/workspace
+      - key: OLLAMA_BASE_URL
+        sync: false
+        # Set this to your Ollama instance URL
+        # e.g., http://your-ollama-server:11434
+      - key: OLLAMA_DEFAULT_MODEL
+        value: llama3
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: JWT_EXPIRY_MINUTES
+        value: 1440
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    disk:
+      name: ai-platform-data
+      mountPath: /app/data
+      sizeGB: 1

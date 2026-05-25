@@ -4,23 +4,45 @@ class SocketManager {
     this.listeners = new Map();
     this.reconnectAttempts = 0;
     this.maxReconnectAttempts = 20;
-    this.reconnectInterval = 2000; // 2 seconds
-    this.manualDisconnect = false; 
-    this.hasConnectedOnce = false; // Track if we've ever connected
+    this.reconnectInterval = 2000;
+    this.manualDisconnect = false;
+    this.hasConnectedOnce = false;
+  }
+
+  getWsUrl() {
+    const configured = import.meta.env.VITE_WS_URL;
+    if (configured) {
+      return configured;
+    }
+    // Auto-detect from API URL
+    const apiUrl = import.meta.env.VITE_API_URL || '';
+    if (apiUrl.includes('onrender.com')) {
+      const host = apiUrl.replace(/https?:\/\//, '').replace(/\/api$/, '');
+      return `wss://${host}/ws`;
+    }
+    if (apiUrl.includes('://')) {
+      const host = apiUrl.replace(/https?:\/\//, '').replace(/\/api$/, '');
+      const protocol = apiUrl.startsWith('https') ? 'wss' : 'ws';
+      return `${protocol}://${host}/ws`;
+    }
+    return 'ws://localhost:8000/ws';
   }
 
   connect() {
-    // If already connected or currently connecting, do nothing
-    if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) return;
+    if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) {
+      return;
+    }
+    this.manualDisconnect = false;
+    this.reconnectAttempts = 0;
 
-    this.manualDisconnect = false; 
-    this.reconnectAttempts = 0;    
+    const wsUrl = this.getWsUrl();
+    console.log(`[WS] Connecting to ${wsUrl}`);
 
-    this.socket = new WebSocket('ws://localhost:8000/ws');
+    this.socket = new WebSocket(wsUrl);
 
     this.socket.onopen = () => {
-      console.log('[WS] ✅ Connected to FastAPI WebSocket');
-      this.reconnectAttempts = 0; 
+      console.log('[WS] Connected to FastAPI WebSocket');
+      this.reconnectAttempts = 0;
       this.hasConnectedOnce = true;
     };
 
@@ -28,7 +50,6 @@ class SocketManager {
       try {
         const msg = JSON.parse(event.data);
         const eventName = msg.event;
-
         if (this.listeners.has(eventName)) {
           this.listeners.get(eventName).forEach(cb => cb(msg.data));
         }
@@ -38,9 +59,7 @@ class SocketManager {
     };
 
     this.socket.onclose = (event) => {
-      // Only log and reconnect if it wasn't a manual disconnect
       if (!this.manualDisconnect) {
-        // Don't log scary errors if we've never connected (backend is probably just booting up)
         if (this.hasConnectedOnce) {
           console.log('[WS] Disconnected. Attempting to reconnect...');
         }
@@ -49,30 +68,27 @@ class SocketManager {
     };
 
     this.socket.onerror = (err) => {
-      // Suppress scary red console errors on cold start
       if (!this.hasConnectedOnce) {
         console.log('[WS] Waiting for backend to start...');
       } else {
-        console.error('[WS] Error. Is the backend running on http://localhost:8000?');
+        console.error('[WS] Error. Check your backend server.');
       }
     };
   }
 
   tryReconnect() {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.error('[WS] Max reconnection attempts reached. Please check your backend server.');
+      console.error('[WS] Max reconnection attempts reached.');
       return;
     }
-
     this.reconnectAttempts++;
     setTimeout(() => {
-      // console.log(`[WS] Reconnect attempt ${this.reconnectAttempts}...`); // Optional: can be noisy
       this.connect();
     }, this.reconnectInterval);
   }
 
   disconnect() {
-    this.manualDisconnect = true; 
+    this.manualDisconnect = true;
     if (this.socket) {
       this.socket.close();
     }

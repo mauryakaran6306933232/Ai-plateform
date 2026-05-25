@@ -48,7 +48,7 @@ export default function Login() {
             <Bot className="h-8 w-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold">AI Platform</h1>
-          <p className="text-muted-foreground">FAANG-Level Autonomous AI OS</p>
+          <p className="text-muted-foreground"></p>
         </div>
         <Card>
           <CardHeader>
