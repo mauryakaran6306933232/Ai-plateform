@@ -5,6 +5,7 @@ python-multipart
 python-dotenv
 pydantic
 pydantic-settings
+pydantic[email]
 
 # Auth
 python-jose[cryptography]
@@ -30,6 +31,9 @@ langgraph
 
 # Ollama
 ollama
+
+# Groq
+groq
 
 # WebSockets
 websockets
@@ -61,5 +65,3 @@ apscheduler
 
 # GPU Monitoring
 pynvml
-
-groq

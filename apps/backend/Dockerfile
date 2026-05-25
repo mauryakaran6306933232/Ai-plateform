@@ -1,6 +1,5 @@
 FROM python:3.11-slim
 
-# Set working directory
 WORKDIR /app
 
 # Install system dependencies
@@ -45,15 +44,15 @@ RUN python -m playwright install chromium
 # Copy application code
 COPY . .
 
-# Create workspace directory
-RUN mkdir -p /app/workspace
+# Create necessary directories
+RUN mkdir -p /app/workspace /app/chroma_data
 
-# Expose port (Render provides PORT env var)
+# Expose port
 EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
+    CMD curl -f http://localhost:8000/health || exit 1
 
-# Start the application
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+# Start the application - Render provides PORT env var
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
