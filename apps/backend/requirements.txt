@@ -61,3 +61,5 @@ apscheduler
 
 # GPU Monitoring
 pynvml
+
+groq
